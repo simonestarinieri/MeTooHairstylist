@@ -1,6 +1,10 @@
 module.exports = [
   // ... existing loader config ...
   {
+    test: /\.(png|svg|jpg|jpeg|gif)$/i,
+    type: 'asset/resource',
+  },
+  {
     test: /\.jsx?$/,
     use: {
       loader: 'babel-loader',

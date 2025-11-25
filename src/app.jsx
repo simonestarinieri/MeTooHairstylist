@@ -2,8 +2,10 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createCalendar, createViewWeek } from '@schedule-x/calendar'
 import '@schedule-x/theme-default/dist/index.css'
+import logo from './logo.png'
 import 'temporal-polyfill/global'
- 
+const headerContent =<img src={logo} alt="MeToo"/>;
+const header = createRoot(document.getElementById('header'))
 const calendar = createCalendar({
   views: [createViewWeek()],
   events: [
@@ -21,5 +23,5 @@ const calendar = createCalendar({
         end: '19:00',
     }
 })
- 
+header.render(headerContent)
 calendar.render(document.getElementById('calendar'))

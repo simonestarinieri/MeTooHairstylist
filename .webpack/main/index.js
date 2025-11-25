@@ -955,8 +955,8 @@ if (__webpack_require__(/*! electron-squirrel-startup */ "./node_modules/electro
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 1024,
     webPreferences: {
       preload: 'D:\\Documenti\\docs\\MeTooHairstylist\\.webpack\\renderer\\main_window\\preload.js'
     }
