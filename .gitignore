@@ -140,6 +140,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 # Webpack
+.webpack
 .webpack/*
 # Env files
 credentials.json
