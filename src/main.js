@@ -1,11 +1,15 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow,ipcMain } = require('electron');
 const path = require('node:path');
-
+import getEvents from '../GCal.js';
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
-
+const eventsList = await getEvents().catch(console.error);
+ipcMain.handle('get-data', () => {
+  // Return any data you want to send to the renderer
+  return { message: eventsList, timestamp: Date.now() };
+});
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
