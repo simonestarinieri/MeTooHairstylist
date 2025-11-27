@@ -2,6 +2,7 @@ const {OAuth2Client} = require('google-auth-library');
 import {google} from 'googleapis';
 const http = require('http');
 const url = require('url');
+const fs = require('node:fs');
 const open = require('open');
 const destroyer = require('server-destroy');
 const today = new Date();
@@ -10,12 +11,13 @@ const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate()+7);
 // Download your OAuth2 configuration from the Google
 const keys = require('./credentials.json');
+const token = require('./token.json');
 
 /**
 * Start by acquiring a pre-authenticated oAuth2 client.
 */
 async function getEvents() {
-  const  auth = await getAuthenticatedClient();
+  const  auth = await clientManager();
   // Make a simple request to the People API using our pre-authenticated client. The `fetch` and
   // `request` methods accept a [`GaxiosOptions`](https://github.com/googleapis/gaxios)
   // object.
@@ -51,6 +53,24 @@ async function getEvents() {
   return events;
 }
 
+async function clientManager(){
+  console.log(new Date(token.expiry_date) < new Date());
+    if(typeof token.expiry_date == 'undefined' || new Date(token.expiry_date-20) < new Date()){
+      return await getAuthenticatedClient();
+    }else{
+      const oAuth2Client = new OAuth2Client({
+        clientId: keys.web.client_id,
+        clientSecret: keys.web.client_secret,
+        redirectUri: keys.web.redirect_uris[0]
+      });
+      const authorizeUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'online',
+        scope: 'https://www.googleapis.com/auth/calendar.readonly',
+      });
+      oAuth2Client.setCredentials(token);
+      return oAuth2Client;
+  }
+}
 /**
 * Create a new OAuth2Client, and go through the OAuth2 content
 * workflow.  Return the full client to the callback.
@@ -90,6 +110,11 @@ function getAuthenticatedClient() {
             // Make sure to set the credentials on the OAuth2 client.
             oAuth2Client.setCredentials(r.tokens);
             console.info('Tokens acquired.');
+            fs.writeFile('./token.json', JSON.stringify(r.tokens) , err => {
+            if (err) {
+              console.error(err);
+            }
+            });   
             resolve(oAuth2Client);
           }else{
             console.log(req.url);

@@ -43,6 +43,7 @@
     "@schedule-x/events-service": "^3.4.2",
     "@schedule-x/react": "^3.4.0",
     "@schedule-x/theme-default": "^3.4.2",
+    "date-events": "^1.0.1",
     "electron-squirrel-startup": "^1.0.1",
     "google-auth-library": "^10.5.0",
     "googleapis": "^105.0.0",

@@ -1,10 +1,15 @@
 const { app, BrowserWindow,ipcMain } = require('electron');
 const path = require('node:path');
+var clock = require('date-events')();
 import getEvents from '../GCal.js';
+clock.on('*:30',function(hour){
+  console.log('30 min')
+})
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
+const today = new Date();
 const eventsList = await getEvents().catch(console.error);
 ipcMain.handle('get-data', () => {
   // Return any data you want to send to the renderer
