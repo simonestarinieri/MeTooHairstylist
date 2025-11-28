@@ -4,57 +4,16 @@ const http = require('http');
 const url = require('url');
 const fs = require('node:fs');
 const open = require('open');
+const { BrowserWindow } = require('electron');
 const destroyer = require('server-destroy');
+const keys = require('./credentials.json');
+const token = require('./token.json');
 const today = new Date();
 today.setHours(0,0,0,0);
 const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate()+7);
-// Download your OAuth2 configuration from the Google
-const keys = require('./credentials.json');
-const token = require('./token.json');
-
-/**
-* Start by acquiring a pre-authenticated oAuth2 client.
-*/
-async function getEvents() {
-  const  auth = await clientManager();
-  // Make a simple request to the People API using our pre-authenticated client. The `fetch` and
-  // `request` methods accept a [`GaxiosOptions`](https://github.com/googleapis/gaxios)
-  // object.
-    // Create a new Calendar API client.
-  const calendar = google.calendar({version: 'v3', auth});
-  // Get the list of events.
-  const result = await calendar.events.list({
-    calendarId: 'primary',
-    timeMin: today.toISOString(),
-    timeMax: tomorrow.toISOString(),
-    singleEvents: true,
-    orderBy: 'startTime',
-  });
-  const events = result.data.items;
-  if (!events || events.length === 0) {
-    console.log('No upcoming events found.');
-  }
-
-  // Print the start time and summary of each event.
-  for (const event of events) {
-    const start = event.start?.dateTime ?? event.start?.date;
-    console.log(`${start} - ${event.summary}`);
-  }
-  const url = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-
-
-  // After acquiring an access_token, you may want to check on the audience, expiration,
-  // or original scopes requested.  You can do that with the `getTokenInfo` method.
-  const tokenInfo = await auth.getTokenInfo(
-    auth.credentials.access_token
-  );
-  console.log(tokenInfo);
-  return events;
-}
 
 async function clientManager(){
-  console.log(new Date(token.expiry_date) < new Date());
     if(typeof token.expiry_date == 'undefined' || new Date(token.expiry_date-20) < new Date()){
       return await getAuthenticatedClient();
     }else{
@@ -71,6 +30,7 @@ async function clientManager(){
       return oAuth2Client;
   }
 }
+
 /**
 * Create a new OAuth2Client, and go through the OAuth2 content
 * workflow.  Return the full client to the callback.
@@ -101,34 +61,62 @@ function getAuthenticatedClient() {
             const qs = new url.URL(req.url, 'http://localhost:3500')
               .searchParams;
             const code = qs.get('code');
-            console.log(`Code is ${code}`);
-            res.end('Authentication successful! Please return to the console.');
+            res.end("<!DOCTYPE html><html><head><title>Google Auth Login</title><script>window.setTimeout(function(){window.close()},3000);</script></head><body><div id='container'><h1>Authorization successful you can now close this window</h1></div></body><style>@import url('https://fonts.googleapis.com/css2?family=Arsenal:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');html,body{height:100%;width:100%;margin:0;}#container{font-family:Roboto;color:#333;text-align:center;display:flex;align-items:center;padding:40px;margin:auto;height:500px;width:500px;border-radius:50px;box-shadow:5px 5px 5px #aaaaaa;background-color:#f0f0f0}body{display:flex;align-content:center;}</style></html>");
             server.destroy();
 
             // Now that we have the code, use that to acquire tokens.
             const r = await oAuth2Client.getToken(code);
             // Make sure to set the credentials on the OAuth2 client.
             oAuth2Client.setCredentials(r.tokens);
-            console.info('Tokens acquired.');
             fs.writeFile('./token.json', JSON.stringify(r.tokens) , err => {
-            if (err) {
-              console.error(err);
-            }
+              if (err) {
+                console.error(err);
+              }
             });   
             resolve(oAuth2Client);
-          }else{
-            console.log(req.url);
           }
         } catch (e) {
+          res.end("<!DOCTYPE html><html><head><title>Google Auth Login</title><script>window.setTimeout(function(){window.close()},5000);</script></head><body><div id='container'><h1>An error has occured :( , Please retry</h1></div></body><style>@import url('https://fonts.googleapis.com/css2?family=Arsenal:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');html,body{height:100%;width:100%;margin:0;}#container{font-family:Roboto;color:#333;text-align:center;display:flex;align-items:center;padding:40px;margin:auto;height:500px;width:500px;border-radius:50px;box-shadow:5px 5px 5px #aaaaaa;background-color:#f0f0f0}body{display:flex;align-content:center;}</style></html>");
           reject(e);
         }
       })
       .listen(3500, () => {
+        const win = new BrowserWindow();
         // open the browser to the authorize url to start the workflow
-        open(authorizeUrl, {wait: false}).then(cp => cp.unref());
+        win.loadURL(authorizeUrl, {wait: false}).then(cp => cp.unref());
       });
     destroyer(server);
   });
 }
 
-export default getEvents;
+export async function login(){
+  return await getAuthenticatedClient();
+}
+
+export async function getEvents(calendarId='primary') {
+  const  auth = await clientManager();
+  const calendar = google.calendar({version: 'v3', auth});
+  const result = await calendar.events.list({
+    calendarId: calendarId,
+    maxResults:4000,
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+  return result.data.items;
+}
+export async function getWeekEvents(calendarId='primary'){
+  let first = new Date();
+  let last = new Date();
+  first.setDate(today-today.getDay());
+  last.setDate(first.getDate()+7);
+  const  auth = await clientManager();
+  const calendar = google.calendar({version: 'v3', auth});
+  const result = await calendar.events.list({
+    calendarId: calendarId,
+    timeMin: first.toISOString(),
+    timeMax: last.toISOString(),
+    singleEvents: true,
+    orderBy: 'startTime',
+  });
+  return result.data.items;
+}

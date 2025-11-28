@@ -1,7 +1,7 @@
 const { app, BrowserWindow,ipcMain } = require('electron');
 const path = require('node:path');
 var clock = require('date-events')();
-import getEvents from '../GCal.js';
+const {getEvents} =require('../GCal.js');
 clock.on('*:30',function(hour){
   console.log('30 min')
 })
@@ -10,11 +10,7 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 const today = new Date();
-const eventsList = await getEvents().catch(console.error);
-ipcMain.handle('get-data', () => {
-  // Return any data you want to send to the renderer
-  return { message: eventsList, timestamp: Date.now() };
-});
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -35,7 +31,12 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async ()=> {
+  const eventsList = await getEvents().catch(console.error);
+  ipcMain.handle('get-data', () => {
+    // Return any data you want to send to the renderer
+    return { message: eventsList, timestamp: Date.now() };
+  });
   createWindow();
 
   // On OS X it's common to re-create a window in the app when the

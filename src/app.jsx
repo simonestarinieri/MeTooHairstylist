@@ -13,7 +13,6 @@ window.electronAPI.getData().then(async (receivedData) => {
     events:eventsList,
     locale: 'it-IT',
     timezone: 'Europe/Rome',
-    firstDayOfWeek: 1,
     dayBoundaries:{
       start: '06:00',
       end: '20:00',
@@ -35,8 +34,8 @@ async function parseEvents(list){
     for(let element of list){
       events.push({
         'id':i,
-        'start': Temporal.ZonedDateTime.from(element.start?.dateTime+zone),
-        'end': Temporal.ZonedDateTime.from(element.end?.dateTime+zone),
+        'start': element.start.dateTime ? Temporal.ZonedDateTime.from(element.start.dateTime+zone) : Temporal.PlainDate.from(element.start.date),
+        'end': element.end.dateTime ? Temporal.ZonedDateTime.from(element.end.dateTime+zone) : Temporal.PlainDate.from(element.end.date),
         'title':element.summary,
         'description':element.description
       });
