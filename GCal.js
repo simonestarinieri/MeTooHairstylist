@@ -1,5 +1,6 @@
 const {OAuth2Client} = require('google-auth-library');
 import {google} from 'googleapis';
+import { time } from 'node:console';
 const http = require('http');
 const url = require('url');
 const fs = require('node:fs');
@@ -10,8 +11,16 @@ const keys = require('./credentials.json');
 const token = require('./token.json');
 const today = new Date();
 today.setHours(0,0,0,0);
-const tomorrow = new Date(today);
-tomorrow.setDate(today.getDate()+7);
+const lastYear = new Date();
+lastYear.setFullYear(today.getFullYear()-1);
+lastYear.setDate(2);
+lastYear.setMonth(0);
+lastYear.setHours(0,0,0,0);
+const endYear = new Date();
+endYear.setFullYear(today.getFullYear()+1);
+endYear.setDate(31);
+endYear.setMonth(11);
+endYear.setHours(0,0,0,0);
 
 async function clientManager(){
     if(typeof token.expiry_date == 'undefined' || new Date(token.expiry_date-20) < new Date()){
@@ -93,30 +102,17 @@ export async function login(){
   return await getAuthenticatedClient();
 }
 
-export async function getEvents(calendarId='primary') {
+export async function getEvents(calendarId='primary',timeMin = lastYear,timeMax = endYear) {
+  console.log(timeMin);
   const  auth = await clientManager();
   const calendar = google.calendar({version: 'v3', auth});
   const result = await calendar.events.list({
     calendarId: calendarId,
-    maxResults:4000,
+    timeMin: timeMin,
+    timeMax: timeMax,
+    maxResults:8000,
     singleEvents: true,
     orderBy: 'startTime',
   });
   return result.data.items;
-}
-export async function getWeekEvents(calendarId='primary'){
-  let first = new Date();
-  let last = new Date();
-  first.setDate(today-today.getDay());
-  last.setDate(first.getDate()+7);
-  const  auth = await clientManager();
-  const calendar = google.calendar({version: 'v3', auth});
-  const result = await calendar.events.list({
-    calendarId: calendarId,
-    timeMin: first.toISOString(),
-    timeMax: last.toISOString(),
-    singleEvents: true,
-    orderBy: 'startTime',
-  });
-  return result.data.items;
-}
+} 

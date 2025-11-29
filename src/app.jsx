@@ -39,7 +39,6 @@ async function parseEvents(list){
         'title':element.summary,
         'description':element.description
       });
-    
       i++;
     }
   return(events);
