@@ -2,15 +2,15 @@ const { app, BrowserWindow,ipcMain } = require('electron');
 const path = require('node:path');
 var clock = require('date-events')();
 const {getEvents} =require('../GCal.js');
+const {sendReminder}= require('../WABusinessAPI.js');
 const today = new Date();
 const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate()+1);
 tomorrow.setHours(0,0,0,0);
-clock.on('22:15',async function(hour){
+clock.on('00:54',async function(hour){
   const end = new Date(tomorrow);
   end.setHours(23,59,59,1);
   let list = await getEvents('primary',tomorrow,end).catch(console.error);;
-  console.log(list);
   await sendReminder(list).catch(console.error);
   console.log('Sending Messages');
 })
