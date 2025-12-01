@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import dateEvents from 'date-events';
 import {getEvents} from './GCal.js';
 import {sendReminder} from './WABusinessAPI.js';
-import 'date-events';
 
 const timeMin = new Date();
 timeMin.setDate(timeMin.getDate()+1);
@@ -11,12 +10,8 @@ const timeMax = new Date(timeMin);
 timeMin.setHours(0,0,1,0);
 timeMax.setHours(23,59,59,0);
 
-var clock = new dateEvents();
-
-clock.on('02:30',async function(date){
-    await handleMessages().catch(console.error);
-    console.log('Messages sent');
-})
+handleMessages().catch(console.error);
+console.log('Messages sent');
 
 async function handleMessages(){
     const events = await getEvents(timeMin,timeMax);
