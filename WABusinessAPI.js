@@ -1,10 +1,14 @@
 require('dotenv').config();
-const url = 'https://graph.facebook.com/v22.0/'+process.env.WA_PHONE_NUMBER_ID+'/messages';
+const url = 'https://graph.facebook.com/v23.0/'+process.env.WA_PHONE_NUMBER_ID+'/messages';
 
 export async function sendReminder(list){
+  console.log(list);
   let messages = processMessages(list);
+  console.log(messages);
   for(let message of messages){
-    const body = prepareBody(message);
+     console.log(message);
+    const body = await prepareBody(message);
+    console.log(body);
     const response = await fetch(url,{
       method:'POST',
       headers:{
@@ -18,7 +22,8 @@ export async function sendReminder(list){
   }
 }
 
-function prepareBody(message){
+async function prepareBody(message){
+  console.log(message.recipient,message.person,message.date,message.time);
 const body = {
       "messaging_product":"whatsapp",
       "to":message.recipient,
@@ -26,9 +31,9 @@ const body = {
       "template":{
         "name":"appointment_reminder",
         "language":{
-          "code":"it_IT"
+          "code":"it"
         },
-        "components":[
+        "components":JSON.stringify([
           {
             "type":"body",
             "parameters":[
@@ -46,7 +51,7 @@ const body = {
               }
             ]
           },
-        ]
+        ])
       }
     }
     return body;
@@ -66,7 +71,7 @@ function processMessages(list){
         "time":time,
         "recipient":data.recipient
       }
-      console.log(message,data,element);
+      messages.push(message);
     }
   }catch(e){
     console.log(e);

@@ -31,11 +31,9 @@ async function clientManager(){
         clientSecret: keys.web.client_secret,
         redirectUri: keys.web.redirect_uris[0]
       });
-      const authorizeUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'online',
-        scope: 'https://www.googleapis.com/auth/calendar.readonly',
+      oAuth2Client.setCredentials({
+        refresh_token:token.refresh_token
       });
-      oAuth2Client.setCredentials(token);
       return oAuth2Client;
   }
 }
@@ -58,6 +56,7 @@ function getAuthenticatedClient() {
     const authorizeUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: 'https://www.googleapis.com/auth/calendar.readonly',
+      include_granted_scopes: true,
     });
 
     // Open an http server to accept the oauth callback. In this simple example, the
@@ -98,12 +97,7 @@ function getAuthenticatedClient() {
   });
 }
 
-export async function login(){
-  return await getAuthenticatedClient();
-}
-
 export async function getEvents(calendarId='primary',timeMin = lastYear,timeMax = endYear) {
-  console.log(timeMin);
   const  auth = await clientManager();
   const calendar = google.calendar({version: 'v3', auth});
   const result = await calendar.events.list({
