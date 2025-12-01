@@ -13,7 +13,7 @@ timeMax.setHours(23,59,59,0);
 
 var clock = new dateEvents();
 
-clock.on('02:10',async function(date){
+clock.on('02:25',async function(date){
     await handleMessages().catch(console.error);
     console.log('Messages sent');
 })
