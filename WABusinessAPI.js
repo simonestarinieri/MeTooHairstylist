@@ -1,4 +1,6 @@
-require('dotenv').config();
+import * as dot from 'dotenv';
+dot.config();
+
 const url = 'https://graph.facebook.com/v22.0/'+process.env.WA_PHONE_NUMBER_ID+'/messages';
 
 export async function sendReminder(list){
@@ -26,7 +28,7 @@ const body = {
       "template":{
         "name":"appointment_reminder",
         "language":{
-          "code":"it_IT"
+          "code":"it"
         },
         "components":[
           {
@@ -38,11 +40,11 @@ const body = {
               },
               {
                 "type":"text",
-                "text":message.date
+                "text":message.date,
               },
               {
                 "type":"text",
-                "text":message.time
+                "text":message.time,
               }
             ]
           },
@@ -58,7 +60,7 @@ function processMessages(list){
     for(let element of list){
       let data = JSON.parse(element.description);
       let date = new Date(element.start.dateTime);
-      let time = ''+date.getHours()+':'+date.getMinutes();
+      let time = ''+String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
       date = ''+date.getDate()+'/'+(date.getMonth()+1)+"/"+date.getFullYear();
       const message = {
         "person":element.summary,
@@ -66,7 +68,7 @@ function processMessages(list){
         "time":time,
         "recipient":data.recipient
       }
-      console.log(message,data,element);
+      messages.push(message);
     }
   }catch(e){
     console.log(e);
