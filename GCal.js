@@ -45,7 +45,7 @@ function getAuthenticatedClient() {
     const oAuth2Client = new OAuth2Client({
       clientId: keys.web.client_id,
       clientSecret: keys.web.client_secret,
-      redirectUri: keys.web.redirect_uris[1]
+      redirectUri: keys.web.redirect_uris[0]
     });
 
     // Generate the url that will be used for the consent dialog.
@@ -95,7 +95,7 @@ function regenerateClient(token){
   const oAuth2Client = new OAuth2Client({
     clientId: keys.web.client_id,
     clientSecret: keys.web.client_secret,
-    redirectUri: keys.web.redirect_uris[1]
+    redirectUri: keys.web.redirect_uris[0]
   });
   oAuth2Client.setCredentials({
     refresh_token:token.refresh_token
