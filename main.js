@@ -30,7 +30,7 @@ timeMax.setHours(23,0,0,0);
 app.get('/',(req,res)=>{
     res.send('nothing to see here yet');
 })
-app.get('/supersecreturlnoonewilleverguess',async (req,res)=>{
+app.get('/manual',async (req,res)=>{
    if(handleClient()){
         res.redirect('./auto');
    }else{
