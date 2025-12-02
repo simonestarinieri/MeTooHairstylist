@@ -22,6 +22,9 @@ const authorizeUrl = oAuth2Client.generateAuthUrl({
     prompt:'consent',
     scope: 'https://www.googleapis.com/auth/calendar'
 });
+oAuth2Client.setCredentials({
+  refresh_token:token.refresh_token
+});
 const timeMin = new Date();
 timeMin.setDate(timeMin.getDate()+1);
 const timeMax = new Date(timeMin);
