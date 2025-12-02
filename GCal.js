@@ -11,6 +11,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const keys = require("./credentials.json");
 
+const local = 1;
 const timeMin = new Date();
 timeMin.setDate(timeMin.getDate()+1);
 const timeMax = new Date(timeMin);
@@ -45,7 +46,7 @@ function getAuthenticatedClient() {
     const oAuth2Client = new OAuth2Client({
       clientId: keys.web.client_id,
       clientSecret: keys.web.client_secret,
-      redirectUri: keys.web.redirect_uris[0]
+      redirectUri: keys.web.redirect_uris[local]
     });
 
     // Generate the url that will be used for the consent dialog.
@@ -95,7 +96,7 @@ function regenerateClient(token){
   const oAuth2Client = new OAuth2Client({
     clientId: keys.web.client_id,
     clientSecret: keys.web.client_secret,
-    redirectUri: keys.web.redirect_uris[0]
+    redirectUri: keys.web.redirect_uris[local]
   });
   oAuth2Client.setCredentials({
     refresh_token:token.refresh_token

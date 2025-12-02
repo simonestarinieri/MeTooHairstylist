@@ -16,6 +16,7 @@ export async function sendReminder(list){
       body:JSON.stringify(body),
     });
     const data = await response.json();
+    return (data);
     console.log(data);
   }
 }
