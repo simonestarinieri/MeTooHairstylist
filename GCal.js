@@ -11,7 +11,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const keys = require("./credentials.json");
 
-const local = 1;
+const local = 0;
 const timeMin = new Date();
 timeMin.setDate(timeMin.getDate()+1);
 const timeMax = new Date(timeMin);
