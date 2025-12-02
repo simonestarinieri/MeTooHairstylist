@@ -27,8 +27,10 @@ timeMin.setDate(timeMin.getDate()+1);
 const timeMax = new Date(timeMin);
 timeMin.setHours(6,30,0,0);
 timeMax.setHours(23,0,0,0);
-
-app.get('/',async (req,res)=>{
+app.get('/',(req,res)=>{
+    res.send('nothing to see here yet');
+})
+app.get('/supersecreturlnoonewilleverguess',async (req,res)=>{
    if(handleClient()){
         res.redirect('./auto');
    }else{
