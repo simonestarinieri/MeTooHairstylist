@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; img-src 'self'"
+    />
+    <meta
+      http-equiv="X-Content-Security-Policy"
+      content="default-src 'self'; script-src 'self';img-serc 'self'"
+    />
+    <link rel="stylesheet" href="style.css">
+    <title>Gestione Appuntamenti</title>
+  </head>
+  <body>
+    <h1>Hello from Electron renderer!</h1>
+    <p>👋</p>
+    <p id="info"></p>
+    <div id="calendar">
+      <form id="calendarHeader" method="post" action="">
+        <select name="person" id="person">
+          <option value="primary">Federico</option>
+          <option value="primary">Test</option>
+        </select>
+        <button id="create">Prenota</button>
+      </form>
+    </div>
+  </body>
+  <script src="../renderer.js"></script>
+</html>

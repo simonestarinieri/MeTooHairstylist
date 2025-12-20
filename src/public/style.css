@@ -1,0 +1,25 @@
+#calendar{
+    margin:auto;
+    width:fit-content;
+    background: url('./img/loading.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#calendarBody{
+    display:flex;
+    background-color: whitesmoke;
+    height:600px;
+    width:400px;
+}
+.day,#times{
+    border:1px solid black;
+    width:100px;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+.hour,.hourHeader,.dayHeader{
+    height:50px;
+    border:1px solid black;
+}
